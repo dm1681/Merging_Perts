@@ -1,0 +1,28 @@
+Using Python, plot the following two parametric functions on the same
+axes.
+
+ * start with t = np.arange(1,100,0.01)
+
+x = 10 * cos(2t)
+y = 10 * sin(3t)
+
+Plot x vs. y
+
+and 
+
+i = 11 * sin(t) * cos(2t)
+j = 11 * cos(t) * sin(2t)
+
+Plot i vs. j
+
+
+Clue #1 - How many times do the two function intersect?
+
+(Read the intections from left to right - increasing x-value).
+
+Clue #2 - What is the value of y at the first intersection (nearest
+          integer)?  You may want to zoom in.
+
+Clue #3 - What is the value of x at the last intersection (nearest
+          integer)?  You may want to zoom in.
+

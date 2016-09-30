@@ -1,0 +1,7 @@
+Get the files "Noise.fits", and "Secret.fits"
+
+Read in the two images.
+
+Look at the image that results from Secret.fits - Noise.fits
+
+This image will give you the next file name.

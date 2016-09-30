@@ -1,0 +1,57 @@
+golf #	score	pattern
+golf_01	3	grep -E '\?$' golf_01
+golf_02	5	grep -E '[a-z]' golf_02
+golf_03	3	grep -E 'm s' golf_03
+golf_04	6	grep -E '^[N-Z]' golf_04
+golf_05	14	grep -E '(xx |xx$){2,5}' golf_05
+golf_06	15	grep -E '\w*6\w*6\w*6\w*' golf_06
+golf_07	34	grep -E '(ringo|\(|\)) (\bringo\b|\(|\)) \)$' golf_07
+golf_08	40	grep -E '^cat \w*i{1,3}\w+ (\w{3}|\w{14})( hat|$)' golf_08
+golf_09	28	grep -E '^(\w{2}|\w{4}|\w{6}|\w{16})$' golf_09
+
+letter frequency of astromyths.txt
+35963 a
+   6463 b
+  13387 c
+  16396 d
+  59725 e
+  10533 f
+   7413 g
+  29295 h
+  30717 i
+    482 j
+   1791 k
+  15467 l
+  10700 m
+  30562 n
+  33337 o
+   8354 p
+    421 q
+  27330 r
+  29858 s
+  45568 t
+  11156 u
+   4864 v
+   8358 w
+    852 x
+   7342 y
+    288 z
+
+five most common words of astromyths.txt
+     97 constellations
+     97 universe
+    104 ancient
+    106 planets
+    144 heavens
+
+longest words of astromyths.txt (3 of them)
+      1 contradistinction
+      1 indistinguishable
+      1 misinterpretation
+
+
+-code1.txt-random-the most frequent letter is Q, which in english, is one of the least used characters in English
+-code2.txt-random-3 of the 5 most frequent letters are x,y, and j, which are some of least used characters in English
+-code3.txt-English-the most used characters are t,k,w,o,s, which are frequently used in English
+-code4.txt-random-"x" and "q" are commonly used characters, which are two of the least used characters in English
+-code5.txt-English-the top five most used characters are y,q,u,t,l, which makes sense. q is usually followed by u, so they should have similar numbers (they do) and the other 3 characters are frequently used in English.

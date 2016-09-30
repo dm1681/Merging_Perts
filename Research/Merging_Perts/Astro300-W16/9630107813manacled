@@ -1,0 +1,11 @@
+
+Get the file 'Rocks.csv'.
+
+The file contains the Name, Absolute Magnitude, and Albedo for some
+Asteroids.
+
+Clue #1 - How many Asteroids have Diameters larger than 200 km?
+
+Clue #2 - What is the Name of the asteroid with a diameter closest to 1,111 furlongs?
+          (Just the proper name, not the number part)
+

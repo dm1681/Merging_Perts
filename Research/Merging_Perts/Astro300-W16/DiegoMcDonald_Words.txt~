@@ -1,0 +1,50 @@
+golf #	score	pattern
+golf_01	3	grep -E '\?$' golf_01
+golf_02	5	grep -E '[a-z]' golf_02
+golf_03	3	grep -E 'm s' golf_03
+golf_04	6	grep -E '^[N-Z]' golf_04
+golf_05
+golf_06
+golf_07
+golf_08
+golf_09
+letter frequency of astromyths.txt
+35963 a
+   6463 b
+  13387 c
+  16396 d
+  59725 e
+  10533 f
+   7413 g
+  29295 h
+  30717 i
+    482 j
+   1791 k
+  15467 l
+  10700 m
+  30562 n
+  33337 o
+   8354 p
+    421 q
+  27330 r
+  29858 s
+  45568 t
+  11156 u
+   4864 v
+   8358 w
+    852 x
+   7342 y
+    288 z
+
+five most common words of astromyths.txt
+     97 constellations
+     97 universe
+    104 ancient
+    106 planets
+    144 heavens
+
+longest words of astromyths.txt (3 of them)
+      1 contradistinction
+      1 indistinguishable
+      1 misinterpretation
+

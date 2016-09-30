@@ -1,0 +1,11 @@
+
+Get the file "Letters.txt"
+
+Find all the lines in the file "Letters.txt" that have, somewhere in the
+line: 5 lowercase letters followed by 3 numbers followed by the letter
+"a" followed by a number (i.e. ktgwa946a9).
+
+At the front of each line is a capital letter. These capital letter
+should spell a short phrase in the order they were found.
+
+Clue #1 - What is this phrase?
