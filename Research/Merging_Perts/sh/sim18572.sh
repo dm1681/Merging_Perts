@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /gscratch/vsm/dm1681/runs/15085
+vplanet vpl.in
