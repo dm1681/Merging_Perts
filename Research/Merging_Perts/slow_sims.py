@@ -93,7 +93,7 @@ all_data = np.vstack((sim_list,mut_incl_list,b_semi_list,c_semi_list))
 all_data = np.transpose(all_data)
 
 x = np.arange(all_data.shape[0])
-y = all_data[:,3:4]
+y = all_data[:,1:2]
 #y = float(y)
 
 fig,ax = plt.subplots(1,1)
@@ -102,3 +102,15 @@ plt.show()
 
 print (all_data,all_data.shape)
 #print (comp_list.shape,comp_list)
+
+'''
+make list of what didnt run
+system.log with no time,
+run on desktop, with deltaT in output 
+
+compare slow sims with fast running sim 
+look at high e, low a of b, mutual incl. 
+
+eqtide only:
+pick age b/w 2gy and 8gyrs (verify), get ecc, orbital, plot avg ecc for each bin of orbit per
+'''
