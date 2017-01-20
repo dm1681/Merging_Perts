@@ -1,21 +1,26 @@
 #to do:
-#change 'bss' to 'ss' in ss = shelve.open
+
 
 
 
 import os
 import numpy as np
 import shelve
+import subprocess
 from astropy import units as u
 from astropy import constants as const
 
-ss = shelve.open('bss') # 'ss' stands for sim status;
-rootdir = "/gscratch/vsm/dm1681/runs"
+ss = shelve.open('ss') # 'ss' stands for sim status;
+
+hyak_root = '/gscratch/vsm/dm1681/runs'
+local_root = '/home/dm1681/Merging_Perts/Research/Merging_Perts/runs'
+rootdir = local_root
 
 t = 25000 #number of sims
 
 uncomp = np.array([])
 comp = np.array([])
+comp_runtime = np.array([])
 
 co_b_semi_list = np.array([])
 un_b_semi_list = np.array([])
@@ -34,35 +39,48 @@ un_b_longa_list = np.array([])
 
 co_c_longa_list = np.array([])
 un_c_longa_list = np.array([])
+
+
+
+#define open and split by line function:
+def open_split(file_path):
+	fi = open(file_path)
+	fi_content = fi.read()
+	fi_content = fi_content.split('\n')
+	return fi_content
 	
 #how to identify Runtime in system.log file:
 n = 0
 while n <= t-1:
 	name_idx = '%05i'%n
 	folder_name = name_idx
-	print (folder_name)
+	#print (folder_name)
 	wd = rootdir+'/'+folder_name+'/'
 	
 	b_in = wd+'b.in'
-	b_file = open(b_in)
-	b_content = b_file.read()
-	b_content = b_content.split('\n')
+	b_content = open_split(b_in)
 	
 	c_in = wd+'c.in'
-	c_file = open(c_in)
-	c_content = c_file.read()
-	c_content = c_content.split('\n')
+	c_content = open_split(c_in)
 	
 	log = wd+'system.log'
 	
 	if os.path.isfile(log) == True: #log file exists
-		log_file = open(log)
-		log_content = log_file.read()
-		log_content = log_content.split('\n') #separates by line
+		
+		log_content = open_split(log)
+		
 		runtime = log_content[-2] #takes the line corresponding to "Runtime"
 		
-		if runtime[0:7] == 'Runtime': #runtime is printed
+		if runtime[0:7] == 'Runtime': #runtime is printed in log file
+			
+			time = runtime.split(' = ')
+			time = time[1]
+			time = time.split(' ')
+			time = time[0]
+				
+			
 			comp = np.append(comp,folder_name)
+			comp_runtime = np.append(comp_runtime,time)
 			
 			co_b_semi = b_content[10]
 			co_b_semi = co_b_semi.split('\t')
@@ -99,6 +117,8 @@ while n <= t-1:
 			co_c_longa = co_c_longa[1]
 			co_c_longa = float(co_c_longa)
 			co_c_longa_list = np.append(co_c_longa_list, co_c_longa)
+			
+			print (folder_name,'C')
 
 		else: #runtime not printed --> uncompleted
 			uncomp = np.append(uncomp,folder_name)
@@ -139,6 +159,8 @@ while n <= t-1:
 			un_c_longa = float(un_c_longa)
 			un_c_longa_list = np.append(un_c_longa_list, un_c_longa)
 			
+			print (folder_name,'U')
+			
 		
 	elif os.path.isfile(log) == False: #log file does not exist --> uncompleted
 		uncomp = np.append(uncomp,folder_name)
@@ -178,6 +200,8 @@ while n <= t-1:
 		un_c_longa = un_c_longa[1]
 		un_c_longa = float(un_c_longa)
 		un_c_longa_list = np.append(un_c_longa_list, un_c_longa)
+		
+		print (folder_name,'U')
 		
 	
 	
@@ -231,6 +255,8 @@ un_mut_incl = mut_incl
 
 ss['uncomp'] = uncomp
 ss['comp'] = comp
+ss['comp_runtime'] = comp_runtime
+
 
 ss['co_b_semi'] = co_b_semi_list
 ss['un_b_semi']=un_b_semi_list 
@@ -252,5 +278,8 @@ ss['un_c_longa']=un_c_longa_list
 
 ss['co_mut_inc'] = co_mut_incl
 ss['un_mut_inc'] = un_mut_incl
+
+#now to tar the files containing the above vars
+tar = subprocess.call(['tar -zcf ss.tar.gz ss.*'], shell=True, cwd=rootdir)
 
 print (np.argmax(co_mut_incl),uncomp.shape,comp.shape)
