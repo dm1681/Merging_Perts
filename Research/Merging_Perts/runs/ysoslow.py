@@ -8,11 +8,12 @@ import numpy as np
 import shelve
 from astropy import units as u
 from astropy import constants as const
+from astropy.table import QTable
 
 ss = shelve.open('ss') # 'ss' stands for sim status;
 local_dir = "/home/dm1681/Research/Research/Merging_Perts/runs"
 hyak_dir = "/gscratch/vsm/dm1681/runs"
-rootdir = local_dir
+rootdir = hyak_dir
 
 t = 25000 #number of sims
 
@@ -22,6 +23,9 @@ comp_runtime = np.array([])
 
 co_b_semi_list = np.array([])
 un_b_semi_list = np.array([])
+
+co_c_semi_list = np.array([])
+un_c_semi_list = np.array([])
 
 co_b_ecc_list = np.array([])
 un_b_ecc_list = np.array([])
@@ -84,6 +88,12 @@ while n <= t-1:
 			co_b_semi = float(co_b_semi)
 			co_b_semi_list = np.append(co_b_semi_list, co_b_semi)
 			
+			co_c_semi = c_content[9]
+			co_c_semi = co_c_semi.split('\t')
+			co_c_semi = co_c_semi[1]
+			co_c_semi = float(co_c_semi)
+			co_c_semi_list = np.append(co_c_semi_list, co_c_semi)
+			
 			co_b_ecc = b_content[9]
 			co_b_ecc = co_b_ecc.split('\t')
 			co_b_ecc = co_b_ecc[1]
@@ -130,6 +140,12 @@ while n <= t-1:
 			un_b_semi = un_b_semi[1]
 			un_b_semi = float(un_b_semi)
 			un_b_semi_list = np.append(un_b_semi_list, un_b_semi)
+			
+			un_c_semi = c_content[9]
+			un_c_semi = un_c_semi.split('\t')
+			un_c_semi = un_c_semi[1]
+			un_c_semi = float(un_c_semi)
+			un_c_semi_list = np.append(un_c_semi_list, un_c_semi)
 			
 			un_b_ecc = b_content[9]
 			un_b_ecc = un_b_ecc.split('\t')
@@ -178,6 +194,12 @@ while n <= t-1:
 		un_b_semi = un_b_semi[1]
 		un_b_semi = float(un_b_semi)
 		un_b_semi_list = np.append(un_b_semi_list, un_b_semi)
+		
+		un_c_semi = c_content[9]
+		un_c_semi = un_c_semi.split('\t')
+		un_c_semi = un_c_semi[1]
+		un_c_semi = float(un_c_semi)
+		un_c_semi_list = np.append(un_c_semi_list, un_c_semi)
 		
 		un_b_ecc = b_content[9]
 		un_b_ecc = un_b_ecc.split('\t')
@@ -267,33 +289,19 @@ mut_incl = np.arccos(np.cos(dInc_b_rad)*np.cos(dInc_c_rad)+
 un_mut_incl = mut_incl
 
 
-ss['uncomp'] = uncomp
-ss['comp'] = comp
-ss['comp_runtime'] = comp_runtime
+c = QTable()
+c['Sim #'] = comp
+c['Semi_b_0'] = co_b_semi_list
+c['Semi_c_0'] = co_c_semi_list
+c['Ecc_b_0'] = co_b_ecc_list
+c['Ecc_c_0'] = co_c_ecc_list
+c['Inc_b_0'] = co_b_inc_list
+c['Inc_c_0'] = co_c_inc_list
+c['LongA_b_0'] = co_b_longa_list
+c['LongA_c_0'] = co_c_longa_list
+c['Mut Incl'] = co_mut_incl
+c['Runtime'] = comp_runtime
+c.write('completed.csv', format='ascii.csv')
 
-
-ss['co_b_semi'] = co_b_semi_list
-ss['un_b_semi']=un_b_semi_list 
-
-ss['co_b_ecc']=co_b_ecc_list 
-ss['un_b_ecc']=un_b_ecc_list 
-
-ss['co_c_ecc']=co_c_ecc_list
-ss['un_c_ecc']=un_c_ecc_list
-
-ss['co_b_inc']=co_b_inc_list 
-ss['un_b_inc']=un_b_inc_list
-
-ss['co_c_inc']=co_c_inc_list 
-ss['un_c_inc']=un_c_inc_list 
-
-ss['co_b_longa']=co_b_longa_list
-ss['un_b_longa']=un_b_longa_list
-
-ss['co_c_longa']=co_c_longa_list 
-ss['un_c_longa']=un_c_longa_list
-
-ss['co_mut_inc'] = co_mut_incl
-ss['un_mut_inc'] = un_mut_incl
-
-print (np.argmax(co_mut_incl),uncomp.shape,comp.shape)
+print(c)
+#print (np.argmax(co_mut_incl),uncomp.shape,comp.shape)
