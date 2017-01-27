@@ -6,15 +6,13 @@
 import os
 import numpy as np
 import shelve
-import subprocess
 from astropy import units as u
 from astropy import constants as const
 
 ss = shelve.open('ss') # 'ss' stands for sim status;
-
-hyak_root = '/gscratch/vsm/dm1681/runs'
-local_root = '/home/dm1681/Merging_Perts/Research/Merging_Perts/runs'
-rootdir = local_root
+local_dir = "/home/dm1681/Research/Research/Merging_Perts/runs"
+hyak_dir = "/gscratch/vsm/dm1681/runs"
+rootdir = local_dir
 
 t = 25000 #number of sims
 
@@ -28,6 +26,9 @@ un_b_semi_list = np.array([])
 co_b_ecc_list = np.array([])
 un_b_ecc_list = np.array([])
 
+co_c_ecc_list = np.array([])
+un_c_ecc_list = np.array([])
+
 co_b_inc_list = np.array([])
 un_b_inc_list = np.array([])
 
@@ -39,15 +40,6 @@ un_b_longa_list = np.array([])
 
 co_c_longa_list = np.array([])
 un_c_longa_list = np.array([])
-
-
-
-#define open and split by line function:
-def open_split(file_path):
-	fi = open(file_path)
-	fi_content = fi.read()
-	fi_content = fi_content.split('\n')
-	return fi_content
 	
 #how to identify Runtime in system.log file:
 n = 0
@@ -58,20 +50,24 @@ while n <= t-1:
 	wd = rootdir+'/'+folder_name+'/'
 	
 	b_in = wd+'b.in'
-	b_content = open_split(b_in)
+	b_file = open(b_in)
+	b_content = b_file.read()
+	b_content = b_content.split('\n')
 	
 	c_in = wd+'c.in'
-	c_content = open_split(c_in)
+	c_file = open(c_in)
+	c_content = c_file.read()
+	c_content = c_content.split('\n')
 	
 	log = wd+'system.log'
 	
 	if os.path.isfile(log) == True: #log file exists
-		
-		log_content = open_split(log)
-		
+		log_file = open(log)
+		log_content = log_file.read()
+		log_content = log_content.split('\n') #separates by line
 		runtime = log_content[-2] #takes the line corresponding to "Runtime"
 		
-		if runtime[0:7] == 'Runtime': #runtime is printed in log file
+		if runtime[0:7] == 'Runtime': #runtime is printed
 			
 			time = runtime.split(' = ')
 			time = time[1]
@@ -93,6 +89,12 @@ while n <= t-1:
 			co_b_ecc = co_b_ecc[1]
 			co_b_ecc = float(co_b_ecc)
 			co_b_ecc_list = np.append(co_b_ecc_list, co_b_ecc)
+			
+			co_c_ecc = c_content[8]
+			co_c_ecc = co_c_ecc.split('\t')
+			co_c_ecc = co_c_ecc[1]
+			co_c_ecc = float(co_c_ecc)
+			co_c_ecc_list = np.append(co_c_ecc_list, co_c_ecc)
 			
 			co_b_inc = b_content[12]
 			co_b_inc = co_b_inc.split('\t')
@@ -135,6 +137,12 @@ while n <= t-1:
 			un_b_ecc = float(un_b_ecc)
 			un_b_ecc_list = np.append(un_b_ecc_list, un_b_ecc)
 			
+			un_c_ecc = c_content[8]
+			un_c_ecc = un_c_ecc.split('\t')
+			un_c_ecc = un_c_ecc[1]
+			un_c_ecc = float(un_c_ecc)
+			un_c_ecc_list = np.append(un_c_ecc_list, un_c_ecc)
+			
 			un_b_inc = b_content[12]
 			un_b_inc = un_b_inc.split('\t')
 			un_b_inc = un_b_inc[1]
@@ -176,6 +184,12 @@ while n <= t-1:
 		un_b_ecc = un_b_ecc[1]
 		un_b_ecc = float(un_b_ecc)
 		un_b_ecc_list = np.append(un_b_ecc_list, un_b_ecc)
+		
+		un_c_ecc = c_content[8]
+		un_c_ecc = un_c_ecc.split('\t')
+		un_c_ecc = un_c_ecc[1]
+		un_c_ecc = float(un_c_ecc)
+		un_c_ecc_list = np.append(un_c_ecc_list, un_c_ecc)
 		
 		un_b_inc = b_content[12]
 		un_b_inc = un_b_inc.split('\t')
@@ -264,6 +278,9 @@ ss['un_b_semi']=un_b_semi_list
 ss['co_b_ecc']=co_b_ecc_list 
 ss['un_b_ecc']=un_b_ecc_list 
 
+ss['co_c_ecc']=co_c_ecc_list
+ss['un_c_ecc']=un_c_ecc_list
+
 ss['co_b_inc']=co_b_inc_list 
 ss['un_b_inc']=un_b_inc_list
 
@@ -278,8 +295,5 @@ ss['un_c_longa']=un_c_longa_list
 
 ss['co_mut_inc'] = co_mut_incl
 ss['un_mut_inc'] = un_mut_incl
-
-#now to tar the files containing the above vars
-tar = subprocess.call(['tar -zcf ss.tar.gz ss.*'], shell=True, cwd=rootdir)
 
 print (np.argmax(co_mut_incl),uncomp.shape,comp.shape)
