@@ -11,9 +11,9 @@ from astropy import constants as const
 from astropy.table import QTable
 
 ss = shelve.open('ss') # 'ss' stands for sim status;
-local_dir = "/home/dm1681/Research/Research/Merging_Perts/runs"
+local_dir = "/home/dm1681/Merging_Perts/Research/Merging_Perts/runs"
 hyak_dir = "/gscratch/vsm/dm1681/runs"
-rootdir = hyak_dir
+rootdir = local_dir
 
 t = 25000 #number of sims
 
