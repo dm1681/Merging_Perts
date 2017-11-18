@@ -21,8 +21,7 @@ coupling all of these modules should provide two pieces of information:
 
 todo:
 -----
-- generate input files
---- generate input files for loaded IC files
+
 
 '''
 
@@ -309,13 +308,7 @@ def write_ICs(runs_dir, n, modules):
 	while i <= n-1:
 		# make strings of values; b.in
 		name_idx = '%05i'%i
-		if i%30 == 0:
-			dots='.'
-		elif i%30 == 10:
-			dots='..'
-		elif i%30 == 20:
-			dots='...'
-		print ('Writing'+dots, end='\r')
+		print ('Writing...\n')
 		if os.path.isdir(runs_dir+name_idx) == True: #sim folders exist
 			shutil.rmtree(runs_dir) #removes previous folders; THIS LINE DELETES THE ENTIRE RUNS DIRECTORY
 			os.makedirs(runs_dir+name_idx)
@@ -556,23 +549,24 @@ def write_atmesc(body_content, body_outputorder, body, idx):
 	star_outputorder = ''
 	if body == 'star':
 		outputorder = star_outputorder
-	else:
+
+	elif body == 'b':
+		body_content += ('\n\n#ATMESC Properties'
+						 + '\nsPlanetRadiusModel\t' + sPlanetRadiusModel
+						 + '\nbHaltEnvelopeGone\t' + bHaltEnvelopeGone_str
+						 + '\ndEnvelopeMass\t\t' + str(IC['EnvMass_'+body][idx] * -1)
+						 + '\ndAtmXAbsEffH\t\t' + str(IC['AtmXAbsEffH_'+body][idx])
+						 + '\ndThermTemp\t\t' + str(IC['ThermTemp_'+body][idx])
+						 + '\ndPresXUV\t\t' + str(IC['PresXUV_'+body][idx])
+						 + '\ndAtmGasConst\t\t' + str(IC['AtmGasConst_'+body][idx])
+#					 	 + '\ndFXUV\t\t\t' + str(IC['FXUV_'+body][idx])
+						 )
 		outputorder = planet_outputorder
 
-	body_content += ('\n\n#ATMESC Properties'+
-					 '\nsPlanetRadiusModel\t' + sPlanetRadiusModel +
-					 '\nbHaltEnvelopeGone\t' + bHaltEnvelopeGone_str +
-					 '\ndEnvelopeMass\t\t' + str(IC['EnvMass_'+body][idx] * -1) +
-					 '\ndAtmXAbsEffH\t\t' + str(IC['AtmXAbsEffH_'+body][idx]) +
-					 '\ndThermTemp\t\t' + str(IC['ThermTemp_'+body][idx]) +
-					 '\ndPresXUV\t\t' + str(IC['PresXUV_'+body][idx]) +
-					 '\ndAtmGasConst\t\t' + str(IC['AtmGasConst_'+body][idx]) +
-					 '\ndFXUV\t\t\t' + str(IC['FXUV_'+body][idx]))
 	body_outputorder += outputorder
 	return body_content, body_outputorder
 
 ### Time to do things ###
-
 
 if bLoad == False:
 	# number of simulations to generate
@@ -604,6 +598,16 @@ if bLoad == False:
 	else:
 		print ('ProbEcc data not found! E-mail dm1681@gmail.com for help!')
 
+	# def linear interp for Q and atmmassfrac;
+	min_q = 10**6
+	max_q = 10**7
+	min_atmmassfrac = 0.01
+	max_atmmassfrac = 0.1
+	slope = (max_atmmassfrac - min_atmmassfrac)/(max_q - min_q)
+	# y = atmmassfrac, x = q
+	def linear_interp(x):
+		y = min_atmmassfrac + slope * (x - min_q)
+		return y
 
 	# generates a discribution of "n" eccentricities fit observed
 	def ecc_gen(n,name):
@@ -637,6 +641,8 @@ if bLoad == False:
 			mass = ((r/const.R_earth)**(3.68))*const.M_earth
 			mass = mass.to(u.earthMass)
 			Qplanet = np.random.uniform(30,301)
+			if toggle == 'atm':
+				return 0.0
 		else:
 			r = r.to(u.cm)
 			volume = (4.0 * np.pi * r**3.0) / 3.0
@@ -644,6 +650,9 @@ if bLoad == False:
 			mass = volume * density
 			mass = mass.to(u.earthMass)
 			Qplanet = np.random.uniform(10**6, (10**7)+1)
+			atmmassfrac = linear_interp(Qplanet)
+			if toggle == 'atm':
+				return atmmassfrac
 		if toggle == 'm':
 			return mass
 		elif toggle == 'Q':
@@ -714,6 +723,7 @@ if bLoad == False:
 	rad_c = rad_c * u.earthRad
 
 	mass_b = np.array([])
+	atmmassfrac_b = np.array([])
 	Qp_b = np.array([])
 	semi_b = np.random.uniform(0.01,0.15,n)
 
@@ -725,8 +735,11 @@ if bLoad == False:
 		mass_b = np.append(mass_b,m)
 		q = calc_mass_Qp(r,'Q')
 		Qp_b = np.append(Qp_b, q)
+		AtmMassFrac_b = calc_mass_Qp(r,'atm')
+		atmmassfrac_b = np.append(atmmassfrac_b, AtmMassFrac_b)
 
 	mass_c = np.array([])
+	atmmassfrac_c = np.array([])
 	Qp_c= np.array([])
 
 	print ('Generating Mass Distribution for: %s'%name_outer)
@@ -736,6 +749,9 @@ if bLoad == False:
 		mass_c = np.append(mass_c, m)
 		q = calc_mass_Qp(r,'Q')
 		Qp_c = np.append(Qp_c, q)
+		AtmMassFrac_c = calc_mass_Qp(r,'atm')
+		atmmassfrac_c = np.append(atmmassfrac_c, AtmMassFrac_c)
+
 	# star.in parameters
 	mass_star = np.random.uniform(0.7,1.4,n)
 	rad_star = mass_star * 0.0048 # R_sun
@@ -882,8 +898,8 @@ if bLoad == False:
 	thermtemp_c = np.random.uniform(880, 3000, n)
 	fxuv_b = np.random.uniform(43, 172, n)
 	fxuv_c = np.random.uniform(43, 172, n)
-	atmmassfrac_b = np.random.uniform(0.01, 0.1, n)
-	atmmassfrac_c = np.random.uniform(0.01, 0.1, n)
+	#atmmassfrac_b = np.random.uniform(0.01, 0.1, n)
+	#atmmassfrac_c = np.random.uniform(0.01, 0.1, n)
 	atmxabseffH_b = np.random.uniform(0.1, 0.6, n)
 	atmxabseffH_c = np.random.uniform(0.1, 0.6, n)
 	planetradiusmodel = 'lehmer'
